@@ -1,62 +1,114 @@
-// Mengimpor komponen-komponen dari React Native untuk membangun tampilan login.
-import { View, Text, TextInput, Button, StyleSheet, Image } from 'react-native';
-// Mengimpor router dari Expo Router untuk navigasi antar halaman.
+// app/login.tsx
+import { useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity, Image } from 'react-native';
 import { router } from 'expo-router';
-// Mengimpor gambar logo yang akan ditampilkan di halaman login.
-import logoImage from '../assets/logo.png'; // pastikan file ada di assets
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    if (username === 'admin' && password === 'admin') {
+      await AsyncStorage.setItem('isLoggedIn', 'true');
+      router.replace('/home');
+    } else {
+      Alert.alert('Login Gagal', 'Username atau password salah!');
+    }
+  };
+
+  const handleRegister = () => {
+    router.push('/register');
+  };
+
   return (
     <View style={styles.container}>
-      <Image source={logoImage} style={styles.logo} resizeMode="contain" />
-      <Text style={styles.title}>Login</Text>
+      {/* Kotak form termasuk logo */}
+      <View style={styles.innerContainer}>
+        <Image
+          source={require('../assets/logo.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
 
-      <TextInput placeholder="Email" style={styles.input} />
-      <TextInput placeholder="Password" secureTextEntry style={styles.input} />
+        <Text style={styles.title}>Login</Text>
 
-      <View style={styles.button}>
-        <Button title="Login" onPress={() => router.replace('/')} />
-      </View>
+        <TextInput
+          placeholder="Username"
+          value={username}
+          onChangeText={setUsername}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          style={styles.input}
+          secureTextEntry
+        />
+        <Button title="Login" onPress={handleLogin} />
 
-      <View style={styles.button}>
-        <Button title="Belum punya akun? Register" onPress={() => router.push('/register')} />
+        <TouchableOpacity onPress={handleRegister} style={styles.registerContainer}>
+          <Text style={styles.registerText}>
+            Belum punya akun? <Text style={styles.registerLink}>Silahkan register</Text>
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
-// StyleSheet untuk menentukan tampilan komponen
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Memenuhi seluruh layar
-    backgroundColor: '#f9f9f9',// Warna latar belakang
-    padding: 20, // Padding agar konten tidak menempel di tepi layar
-    paddingTop: 60, // Memberi jarak dari atas layar
-    alignItems: 'center', // Pusatkan semua elemen secara horizontal
+    flex: 1,
+    backgroundColor: '#f8f9fa',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
   },
   logo: {
-    width: 130, // Lebar logo
-    height: 130, // Tinggi logo
-    marginBottom: 10, // Jarak antara logo dan elemen di bawahnya
+    width: 200,  // Ukuran logo sedikit dikecilkan supaya pas
+    height: 100,
+    marginBottom: 10,
+  },
+  innerContainer: {
+    width: '100%',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 30,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
+    elevation: 5,
   },
   title: {
-    fontSize: 24, // Ukuran teks judul
-    fontWeight: 'bold', // Membuat teks tebal
-    marginBottom: 20, // Jarak ke elemen di bawahnya
-    textAlign: 'center', // Posisi teks di tengah
-    color: '#333', // Warna teks
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#333',
   },
   input: {
-    borderWidth: 1, // Ketebalan border
-    borderColor: '#ccc', // Warna border
-    borderRadius: 8, // Membuat sudut border melengkung
-    padding: 10, // Padding dalam input field
-    marginBottom: 15, // Jarak antar input field
-    width: '100%', // Lebar input mengikuti lebar container
-    backgroundColor: '#fff', // Warna latar input
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 15,
+    backgroundColor: '#fff',
   },
-  button: {
-    marginVertical: 5, // Jarak antar tombol
-    width: '100%', // Lebar tombol sesuai dengan container
+  registerContainer: {
+    marginTop: 20,
+  },
+  registerText: {
+    fontSize: 14,
+    color: '#555',
+  },
+  registerLink: {
+    color: '#007bff',
+    fontWeight: 'bold',
   },
 });
